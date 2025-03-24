@@ -298,11 +298,15 @@ type SecretKeySelector struct {
 
 // DestinationToWatch specifies the criteria for monitoring secrets in the cluster.
 type DestinationToWatch struct {
+	// Type specifies the type of destination to watch.
+	// +required
+	// +kubebuilder:validation:Enum=generic;externalsecret;secret;certificate
+	Type string `json:"type"`
 	// GenericDestination specifies the destination to watch
 	// +optional
 	Generic *GenericDestination `json:"generic,omitempty"`
 	// +optional
-	ExternalSecret *ExternalSecretDestination `json:"externalSecret,omitempty"`
+	ExternalSecret *ExternalSecretDestination `json:"externalsecret,omitempty"`
 	// +optional
 	Secret *SecretDestination `json:"secret,omitempty"`
 	// +optional
