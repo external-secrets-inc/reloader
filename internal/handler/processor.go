@@ -13,9 +13,9 @@ import (
 )
 
 type EventHandler struct {
-	ctx                 context.Context
-	client              client.Client
-	secretsToWatchCache []esov1alpha1.DestinationToWatch
+	ctx    context.Context
+	client client.Client
+	cache  []esov1alpha1.DestinationToWatch
 }
 
 func NewEventHandler(client client.Client) *EventHandler {
@@ -26,13 +26,13 @@ func NewEventHandler(client client.Client) *EventHandler {
 	}
 }
 
-func (h *EventHandler) UpdateSecretsToWatch(secretsToWatch []esov1alpha1.DestinationToWatch) {
-	h.secretsToWatchCache = secretsToWatch
+func (h *EventHandler) UpdateDestinationsToWatch(watch []esov1alpha1.DestinationToWatch) {
+	h.cache = watch
 }
 
-func (h *EventHandler) HandleSecretRotationEvent(ctx context.Context, event events.SecretRotationEvent) error {
+func (h *EventHandler) HandleEvent(ctx context.Context, event events.SecretRotationEvent) error {
 	logger := log.FromContext(ctx)
-	for _, watchCriteria := range h.secretsToWatchCache {
+	for _, watchCriteria := range h.cache {
 
 		prov := schema.GetProvider(watchCriteria.Type)
 		if prov == nil {

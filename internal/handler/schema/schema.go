@@ -9,6 +9,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	EXTERNAL_SECRET = "externalsecret"
+	DEPLOYMENT      = "deployment"
+)
+
 type ApplyFn func(obj client.Object, event events.SecretRotationEvent) error
 type ReferenceFn func(obj client.Object, secretName string) (bool, error)
 

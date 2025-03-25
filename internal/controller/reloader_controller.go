@@ -163,7 +163,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 
 	// Reloader Update Detected
-	r.eventHandler.UpdateSecretsToWatch(asyncRotator.Spec.DestinationsToWatch)
+	r.eventHandler.UpdateDestinationsToWatch(asyncRotator.Spec.DestinationsToWatch)
 	manifestName := types.NamespacedName{
 		Namespace: req.Namespace,
 		Name:      req.Name,
@@ -182,10 +182,15 @@ func (r *ReloaderReconciler) processEvents(ctx context.Context) {
 	for {
 		select {
 		case event := <-r.eventChan:
-			err := r.eventHandler.HandleSecretRotationEvent(ctx, event)
-			if err != nil {
-				logger.Error(err, "Failed to handle SecretRotationEvent", "SecretIdentifier", event.SecretIdentifier, "Source", event.TriggerSource)
-			}
+			// Since events can take time to be processed due to waitFor conditions,
+			// we should dispatch events on their own goroutine.
+			// TODO[gusfcarvalho]: are there any possible conflicts with this?
+			go func() {
+				err := r.eventHandler.HandleEvent(ctx, event)
+				if err != nil {
+					logger.Error(err, "Failed to handle SecretRotationEvent", "SecretIdentifier", event.SecretIdentifier, "Source", event.TriggerSource)
+				}
+			}()
 		case <-ctx.Done():
 			return
 		}

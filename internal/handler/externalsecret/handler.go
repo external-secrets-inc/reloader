@@ -114,7 +114,7 @@ func (h *Handler) isResourceWatched(secret esv1beta1.ExternalSecret, w v1alpha1.
 	if err != nil {
 		return false, err
 	}
-	nameMatch := util.IsNameInList(secret, nameSet)
+	nameMatch := util.IsNameInList(&secret, nameSet)
 	if namespaceMatch && labelMatch && nameMatch {
 		return true, nil
 	}
