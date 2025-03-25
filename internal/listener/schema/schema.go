@@ -11,13 +11,14 @@ import (
 )
 
 const (
-	AWS_SQS          = "AwsSqs"
-	AZURE_EVENT_GRID = "AzureEventGrid"
-	GOOGLE_PUB_SUB   = "GooglePubSub"
-	WEBHOOK          = "Webhook"
-	TCP_SOCKET       = "TCPSocket"
-	HASHICORP_VAULT  = "HashicorpVault"
-	MOCK             = "Mock"
+	AWS_SQS           = "AwsSqs"
+	AZURE_EVENT_GRID  = "AzureEventGrid"
+	GOOGLE_PUB_SUB    = "GooglePubSub"
+	WEBHOOK           = "Webhook"
+	TCP_SOCKET        = "TCPSocket"
+	HASHICORP_VAULT   = "HashicorpVault"
+	MOCK              = "Mock"
+	KUBERNETES_SECRET = "KubernetesSecret"
 )
 
 var (

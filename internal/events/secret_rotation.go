@@ -6,4 +6,6 @@ type SecretRotationEvent struct {
 	SecretIdentifier  string
 	RotationTimestamp string
 	TriggerSource     string
+	// Optional bit so we can filter down better depending on the namespace.
+	Namespace string
 }

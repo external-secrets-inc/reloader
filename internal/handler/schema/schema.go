@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	EXTERNAL_SECRET = "externalsecret"
-	DEPLOYMENT      = "deployment"
+	EXTERNAL_SECRET = "Externalsecret"
+	DEPLOYMENT      = "Deployment"
 )
 
 type ApplyFn func(obj client.Object, event events.SecretRotationEvent) error

@@ -33,8 +33,8 @@ type ConfigSpec struct {
 
 // NotificationSource represents a notification system configuration.
 type NotificationSource struct {
-	// Type of the notification source (e.g., AwsSqs, AzureEventGrid, GooglePubSub, HashicorpVault, Webhook, TCPSocket).
-	// +kubebuilder:validation:Enum=AwsSqs;AzureEventGrid;GooglePubSub;HashicorpVault;Webhook;TCPSocket
+	// Type of the notification source (e.g., AwsSqs, AzureEventGrid, GooglePubSub, HashicorpVault, Webhook, TCPSocket, KubernetesSecret).
+	// +kubebuilder:validation:Enum=AwsSqs;AzureEventGrid;GooglePubSub;HashicorpVault;Webhook;TCPSocket;KubernetesSecret
 	// +required
 	Type string `json:"type"`
 
@@ -56,9 +56,9 @@ type NotificationSource struct {
 	// +optional
 	HashicorpVault *HashicorpVaultConfig `json:"hashicorpVault,omitempty"`
 
-	// Kubernetes configuration (required if Type is KubernetesSecret).
+	// Kubernetes Secret watch configuration (required if Type is KubernetesSecret).
 	// +optional
-	Kubernetes *KubernetesConfig `json:"kubernetes,omitempty"`
+	KubernetesSecret *KubernetesSecretConfig `json:"kubernetesSecret,omitempty"`
 
 	// TCPSocket configuration (required if Type is TCPSocket).
 	// +optional
@@ -72,7 +72,7 @@ type NotificationSource struct {
 type DestinationToWatch struct {
 	// Type specifies the type of destination to watch.
 	// +required
-	// +kubebuilder:validation:Enum=generic;externalsecret;deployment;secret;certificate
+	// +kubebuilder:validation:Enum=ExternalSecret;Deployment
 	Type string `json:"type"`
 	// +optional
 	ExternalSecret *ExternalSecretDestination `json:"externalsecret,omitempty"`
