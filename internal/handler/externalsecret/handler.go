@@ -72,7 +72,7 @@ func (h *Handler) _apply(es client.Object, event events.SecretRotationEvent) err
 	return nil
 }
 
-// isExternalSecretWatched determines if a single ExternalSecret matches any of the SecretsToWatch criteria.
+// isResourceWatched determines if a single ExternalSecret matches any of the SecretsToWatch criteria.
 func (h *Handler) isResourceWatched(secret esv1beta1.ExternalSecret, w v1alpha1.DestinationToWatch) (bool, error) {
 	watchCriteria := w.ExternalSecret
 	if watchCriteria == nil {
@@ -125,7 +125,8 @@ func (h *Handler) References(obj client.Object, secretIdentifier string) (bool, 
 	return h.referenceFn(obj, secretIdentifier)
 }
 
-// referencesSecret checks if the ExternalSecret references the given secret identifier.
+// _references checks if the ExternalSecret references the given secret identifier.
+// It is the default References implementation
 func (h *Handler) _references(obj client.Object, secretIdentifier string) (bool, error) {
 	es, ok := obj.(*esv1beta1.ExternalSecret)
 	if !ok {

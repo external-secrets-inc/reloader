@@ -66,6 +66,7 @@ func (h *EventHandler) HandleSecretRotationEvent(ctx context.Context, event even
 			if err != nil {
 				return fmt.Errorf("failed to apply object:%w", err)
 			}
+			// TODO[gusfcarvalho]: Add waitFor logic in here as a way to queue changes to shared secrets
 		}
 	}
 	return nil

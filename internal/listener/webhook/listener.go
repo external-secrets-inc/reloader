@@ -1,4 +1,4 @@
-package listener
+package webhook
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 
 	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	"github.com/external-secrets-inc/reloader/internal/util"
 	"github.com/go-logr/logr"
 	"github.com/tidwall/gjson"
@@ -42,32 +43,6 @@ type WebhookListener struct {
 	logger     logr.Logger
 	client     client.Client
 	retryQueue chan *RetryMessage
-}
-
-// NewWebhookListener creates a new Listener that listens for webhook notifications based on the provided configuration and event channel.
-func NewWebhookListener(ctx context.Context, config *v1alpha1.WebhookConfig, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (Listener, error) {
-	server, err := createServer(config)
-	if err != nil {
-		logger.Error(err, "failed to create webhook server")
-		return nil, fmt.Errorf("failed to create webhook server: %w", err)
-	}
-
-	childCtx, cancel := context.WithCancel(ctx)
-
-	listener := &WebhookListener{
-		config:     config,
-		eventChan:  eventChan,
-		ctx:        childCtx,
-		cancel:     cancel,
-		logger:     logger,
-		server:     server,
-		client:     client,
-		retryQueue: make(chan *RetryMessage),
-	}
-
-	listener.createHandler()
-
-	return listener, nil
 }
 
 // Start initiates the WebhookListener to begin listening for incoming webhook requests.
@@ -285,7 +260,7 @@ func (h *WebhookListener) processSecret(secretIdentifier string) (events.SecretR
 	event := events.SecretRotationEvent{
 		SecretIdentifier:  secretIdentifier,
 		RotationTimestamp: time.Now().Format("2006-01-02-15-04-05.000"),
-		TriggerSource:     WEBHOOK,
+		TriggerSource:     schema.WEBHOOK,
 	}
 	return event, h.processEvent(event)
 }

@@ -1,4 +1,4 @@
-package listener
+package sqs
 
 import (
 	"context"
@@ -7,13 +7,10 @@ import (
 
 	sqstypes "github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/go-logr/logr"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
-	"github.com/external-secrets-inc/reloader/internal/util/mapper"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	awsListener "github.com/external-secrets-inc/reloader/pkg/listener/aws"
-	modelAWS "github.com/external-secrets-inc/reloader/pkg/models/aws"
 )
 
 // Constants for authentication methods.
@@ -41,28 +38,6 @@ type AWSSQSListener struct {
 	listener  *awsListener.AWSSQSListener
 	eventChan chan events.SecretRotationEvent
 	logger    logr.Logger
-}
-
-// NewAWSSQSListener creates a new AWSSQSListener.
-func NewAWSSQSListener(ctx context.Context, config *v1alpha1.AWSSQSConfig, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (Listener, error) {
-	// Create authenticated SQS Listener
-	parsedConfig, err := mapper.TransformConfig[modelAWS.AWSSQSConfig](config)
-	if err != nil {
-		logger.Error(err, "Failed to parse config")
-		return nil, fmt.Errorf("failed to parse config: %w", err)
-	}
-	listener, err := awsListener.NewAWSSQSListener(ctx, &parsedConfig, client, logger)
-	if err != nil {
-		logger.Error(err, "Failed to create SQS Listener")
-		return nil, fmt.Errorf("failed to create SQS Listener: %w", err)
-	}
-
-	return &AWSSQSListener{
-		context:   ctx,
-		listener:  listener,
-		eventChan: eventChan,
-		logger:    logger,
-	}, nil
 }
 
 // Start begins polling the SQS queue for messages.
@@ -135,7 +110,7 @@ func parseEvent(jsonData []byte) (*events.SecretRotationEvent, error) {
 	secretEvent := &events.SecretRotationEvent{
 		SecretIdentifier:  event.Detail.RequestParameters.SecretId,
 		RotationTimestamp: event.Detail.EventTime,
-		TriggerSource:     "aws-sqs",
+		TriggerSource:     schema.AWS_SQS,
 	}
 
 	return secretEvent, nil

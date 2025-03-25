@@ -38,7 +38,6 @@ type ReloaderReconciler struct {
 
 	// Internal fields
 	listenerManager *listener.Manager
-	listenerFactory listener.Factory
 
 	// eventChan is a channel that transports SecretRotationEvent instances between various parts of the system, such as event handlers and listeners.
 	eventChan    chan events.SecretRotationEvent
@@ -46,20 +45,19 @@ type ReloaderReconciler struct {
 }
 
 // NewReloaderReconciler creates a new ReloaderReconciler with the default factory.
-func NewReloaderReconciler(client client.Client, scheme *runtime.Scheme, factory listener.Factory) *ReloaderReconciler {
+func NewReloaderReconciler(client client.Client, scheme *runtime.Scheme) *ReloaderReconciler {
 	return &ReloaderReconciler{
-		Client:          client,
-		Scheme:          scheme,
-		listenerFactory: factory,
-		eventChan:       make(chan events.SecretRotationEvent),
-		eventHandler:    handler.NewEventHandler(client),
+		Client:       client,
+		Scheme:       scheme,
+		eventChan:    make(chan events.SecretRotationEvent),
+		eventHandler: handler.NewEventHandler(client),
 	}
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *ReloaderReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	ctx, cancel := context.WithCancel(context.Background())
-	r.listenerManager = listener.NewListenerManager(ctx, r.listenerFactory, r.eventChan, log.FromContext(ctx))
+	r.listenerManager = listener.NewListenerManager(ctx, r.eventChan, r.Client, log.FromContext(ctx))
 
 	// Start a goroutine to process events
 	go r.processEvents(ctx)

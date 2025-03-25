@@ -37,7 +37,6 @@ import (
 
 	"github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/controller"
-	"github.com/external-secrets-inc/reloader/internal/listener"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -128,12 +127,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	listener.InitializeFactory(mgr.GetClient())
-
 	if err = (controller.NewReloaderReconciler(
 		mgr.GetClient(),
 		mgr.GetScheme(),
-		listener.GetFactory(),
 	)).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Reloader")
 		os.Exit(1)
