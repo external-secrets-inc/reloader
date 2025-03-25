@@ -23,6 +23,7 @@ type Handler struct {
 	destinationCache v1alpha1.DestinationToWatch
 	applyFn          schema.ApplyFn
 	referenceFn      schema.ReferenceFn
+	waitForFn        schema.WaitForFn
 }
 
 func (h *Handler) Filter(destination *v1alpha1.DestinationToWatch, event events.SecretRotationEvent) ([]client.Object, error) {
@@ -121,6 +122,15 @@ func (h *Handler) isResourceWatched(secret esv1beta1.ExternalSecret, w v1alpha1.
 	return false, nil
 }
 
+func (h *Handler) WaitFor(obj client.Object) error {
+	return h.waitForFn(obj)
+}
+
+// _waitFor is a noop for ExternalSecrets
+func (h *Handler) _waitFor(obj client.Object) error {
+	// ExternalSecrets handler does not need to wait for anything
+	return nil
+}
 func (h *Handler) References(obj client.Object, secretIdentifier string) (bool, error) {
 	return h.referenceFn(obj, secretIdentifier)
 }
@@ -164,5 +174,10 @@ func (h *Handler) WithApply(apply schema.ApplyFn) schema.Handler {
 
 func (h *Handler) WithReference(ref schema.ReferenceFn) schema.Handler {
 	h.referenceFn = ref
+	return h
+}
+
+func (h *Handler) WithWaitFor(waitFor schema.WaitForFn) schema.Handler {
+	h.waitForFn = waitFor
 	return h
 }

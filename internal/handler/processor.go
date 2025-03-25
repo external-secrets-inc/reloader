@@ -55,18 +55,30 @@ func (h *EventHandler) HandleSecretRotationEvent(ctx context.Context, event even
 		for _, obj := range objs {
 			isReferenced, err := h.References(obj, event.SecretIdentifier)
 			if err != nil {
+				// This error means something went wrong on a reference check - which is typically very bad
+				logger.Error(err, "failed to check if object is referenced", "name", obj.GetName(), "namespace", obj.GetNamespace(), "type", watchCriteria.Type)
 				return fmt.Errorf("failed to check if object is referenced:%w", err)
 			}
 			if !isReferenced {
 				logger.V(1).Info("skipping object as its not referenced", "name", obj.GetName(), "namespace", obj.GetNamespace())
 				continue
 			}
+			// TODO[gusfcarvalho] - After we know all objects we have to apply due to an event,
+			// We should create a queuing mechanism to try to apply them even if errors happen
+			// As the error might just have been a failing deployment that is going to be fixed eventually
 			// object is referenced - apply
 			err = h.Apply(obj, event)
 			if err != nil {
-				return fmt.Errorf("failed to apply object:%w", err)
+				logger.Error(err, "failed to update object", "name", obj.GetName(), "namespace", obj.GetNamespace(), "type", watchCriteria.Type)
+				// We need to apply all manifests that we can
+				continue
 			}
-			// TODO[gusfcarvalho]: Add waitFor logic in here as a way to queue changes to shared secrets
+			err = h.WaitFor(obj)
+			if err != nil {
+				// If WaitFor fails, it means we need to stop the operation (and eventually requeue - see TODO)
+				logger.Error(err, "stopped updating because of object update failure", "name", obj.GetName(), "namespace", obj.GetNamespace(), "type", watchCriteria.Type)
+				return fmt.Errorf("failed to wait for object:%w", err)
+			}
 		}
 	}
 	return nil

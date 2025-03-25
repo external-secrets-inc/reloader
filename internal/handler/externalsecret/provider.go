@@ -18,6 +18,7 @@ func (p *Provider) NewHandler(ctx context.Context, client client.Client, cache v
 	}
 	h.applyFn = h._apply
 	h.referenceFn = h._references
+	h.waitForFn = h._waitFor
 	return h
 }
 

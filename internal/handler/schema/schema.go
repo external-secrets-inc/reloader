@@ -12,6 +12,8 @@ import (
 type ApplyFn func(obj client.Object, event events.SecretRotationEvent) error
 type ReferenceFn func(obj client.Object, secretName string) (bool, error)
 
+type WaitForFn func(obj client.Object) error
+
 type Handler interface {
 	// Method to implement References
 	// In the future, `matchStrategy` will just replace the References Method
@@ -21,11 +23,16 @@ type Handler interface {
 	// In the future, `updateStrategy` will create a new Apply method
 	Apply(obj client.Object, event events.SecretRotationEvent) error
 
+	// Method to implement WaitFor
+	// In the future, `waitStrategy` will create a new WaitFor method
+	WaitFor(obj client.Object) error
+
 	// Filter implements the filter logic given the selected destination
 	// Returns all objects that match the specific destination configuraiton
 	Filter(destination *v1alpha1.DestinationToWatch, event events.SecretRotationEvent) ([]client.Object, error)
 	WithApply(fn ApplyFn) Handler
 	WithReference(fn ReferenceFn) Handler
+	WithWaitFor(fn WaitForFn) Handler
 }
 
 type Provider interface {
