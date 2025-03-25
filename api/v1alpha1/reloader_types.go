@@ -17,7 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	providersTypes "github.com/external-secrets-inc/providers-listeners/pkg"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -41,7 +40,7 @@ type NotificationSource struct {
 
 	// AwsSqs configuration (required if Type is AwsSqs).
 	// +optional
-	AwsSqs *providersTypes.AWSSQSConfig `json:"awsSqs,omitempty"`
+	AwsSqs *AWSSQSConfig `json:"awsSqs,omitempty"`
 
 	AzureEventGrid *AzureEventGridConfig `json:"azureEventGrid,omitempty"`
 
@@ -63,6 +62,48 @@ type NotificationSource struct {
 
 	// Mock configuration (optional field for testing purposes).
 	Mock *MockConfig `json:"mock,omitempty"`
+}
+
+// AWSSQSConfig contains configuration for AWS SDK.
+type AWSSQSConfig struct {
+	// QueueURL is the URL of the AWS SDK queue.
+	// +required
+	QueueURL string `json:"queueURL"`
+
+	// Authentication methods for AWS.
+	// +required
+	Auth AWSSDKAuth `json:"auth"`
+
+	// MaxNumberOfMessages specifies the maximum number of messages to retrieve from the SDK queue in a single request.
+	// +optional
+	// +kubebuilder:default=10
+	MaxNumberOfMessages int32 `json:"numberOfMessages"`
+
+	// WaitTimeSeconds specifies the duration (in seconds) to wait for messages in the SDK queue before returning.
+	// +optional
+	// +kubebuilder:default=20
+	WaitTimeSeconds int32 `json:"waitTimeSeconds"`
+
+	// VisibilityTimeout specifies the duration (in seconds) that a message received from the SDK queue is hidden from subsequent retrievals.
+	// +optional
+	// +kubebuilder:default=30
+	VisibilityTimeout int32 `json:"visibilityTimeout"`
+}
+
+// AWSSDKAuth contains authentication methods for AWS SDK.
+type AWSSDKAuth struct {
+	AuthMethod string `json:"authMethod"`
+
+	Region string `json:"region"`
+
+	ServiceAccount *ServiceAccountSelector `json:"serviceAccountRef,omitempty"`
+
+	SecretRef *AWSSDKSecretRef `json:"secretRef,omitempty"`
+}
+
+type AWSSDKSecretRef struct {
+	AccessKeyId     SecretKeySelector `json:"accessKeyIdSecretRef"`
+	SecretAccessKey SecretKeySelector `json:"secretAccessKeySecretRef"`
 }
 
 // GooglePubSubConfig contains configuration for Google Pub/Sub.
@@ -257,11 +298,15 @@ type SecretKeySelector struct {
 
 // DestinationToWatch specifies the criteria for monitoring secrets in the cluster.
 type DestinationToWatch struct {
+	// Type specifies the type of destination to watch.
+	// +required
+	// +kubebuilder:validation:Enum=generic;externalsecret;secret;certificate
+	Type string `json:"type"`
 	// GenericDestination specifies the destination to watch
 	// +optional
 	Generic *GenericDestination `json:"generic,omitempty"`
 	// +optional
-	ExternalSecret *ExternalSecretDestination `json:"externalSecret,omitempty"`
+	ExternalSecret *ExternalSecretDestination `json:"externalsecret,omitempty"`
 	// +optional
 	Secret *SecretDestination `json:"secret,omitempty"`
 	// +optional
