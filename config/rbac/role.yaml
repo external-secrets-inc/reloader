@@ -42,17 +42,19 @@ rules:
   - update
   - watch
 - apiGroups:
-  - reloaders.external-secrets.io
+  - reloader.external-secrets.io
   resources:
-  - config
-  - config/status
+  - configs
+  - configs/status
   verbs:
   - get
   - list
+  - patch
+  - update
   - watch
 - apiGroups:
-  - reloaders.external-secrets.io
+  - reloader.external-secrets.io
   resources:
-  - config/finalizers
+  - configs/finalizers
   verbs:
   - update

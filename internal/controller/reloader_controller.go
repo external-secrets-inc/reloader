@@ -83,9 +83,9 @@ func (r *ReloaderReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 // Auto Generated RBAC to ease a little bit the process
 // For real installations, probably users will want to overwrite these.
-// +kubebuilder:rbac:groups=reloaders.external-secrets.io,resources=config,verbs=get;list;watch
-// +kubebuilder:rbac:groups=reloaders.external-secrets.io,resources=config/status,verbs=get;list;watch
-// +kubebuilder:rbac:groups=reloaders.external-secrets.io,resources=config/finalizers,verbs=update
+// +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs/status,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs/finalizers,verbs=update
 // For k8s ExternalSecrets destination
 // +kubebuilder:rbac:groups=external-secrets.io,resources=externalsecrets,verbs=get;list;watch;update;patch
 // For k8s Deployments destination
