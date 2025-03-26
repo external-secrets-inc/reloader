@@ -1,5 +1,5 @@
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= ghcr.io/external-secrets-inc/reloader
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
 
@@ -40,6 +40,19 @@ SHELL = /usr/bin/env bash -o pipefail
 
 .PHONY: all
 all: build
+
+#Tags
+# check if there are any existing `git tag` values
+ifeq ($(shell git tag),)
+# no tags found - default to initial tag `v0.0.0`
+export VERSION := $(shell echo "v0.0.0-$$(git rev-list HEAD --count)-g$$(git describe --dirty --always)" | sed 's/-/./2' | sed 's/-/./2')
+else
+# use tags
+export VERSION := $(shell git describe --dirty --always --tags --exclude 'helm*' | sed 's/-/./2' | sed 's/-/./2')
+endif
+
+TAG_SUFFIX ?=
+export IMAGE_TAG ?= $(VERSION)$(TAG_SUFFIX)
 
 ##@ General
 
@@ -104,14 +117,18 @@ build-%: manifests generate fmt vet ## Build binary for the specified arch
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./cmd/main.go
 
+.PHONY: docker.tag
+docker.tag:  ## Emit IMAGE_TAG
+	@echo $(IMAGE_TAG)
+
 # If you wish to build the manager image targeting other platforms you can use the --platform flag.
 # (i.e. docker build --platform linux/arm64). However, you must enable docker buildKit for it.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker.build
 docker.build: $(addprefix build-,$(ARCH)) ## Build the docker image
 	@$(INFO) docker build
-	echo docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}
-	DOCKER_BUILDKIT=1 docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}
+	echo docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}:${IMAGE_TAG}
+	DOCKER_BUILDKIT=1 docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}:${IMAGE_TAG}
 	@$(OK) docker build
 
 
