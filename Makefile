@@ -119,7 +119,7 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker.tag
 docker.tag:  ## Emit IMAGE_TAG
-        @echo $(IMAGE_TAG)
+	@echo $(IMAGE_TAG)
 
 # If you wish to build the manager image targeting other platforms you can use the --platform flag.
 # (i.e. docker build --platform linux/arm64). However, you must enable docker buildKit for it.
