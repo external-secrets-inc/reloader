@@ -13,14 +13,6 @@ permissions:
   contents: read
 
 jobs:
-  push-helm:
-    runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
   publish-artifacts:
     uses: ./.github/workflows/publish.yml
     permissions:
