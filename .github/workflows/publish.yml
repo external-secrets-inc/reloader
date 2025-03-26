@@ -144,7 +144,7 @@ jobs:
     permissions:
       packages: write
       id-token: write
-      contents: write
+      contents: read
     runs-on: ubuntu-latest
     needs: build-publish
     steps:
