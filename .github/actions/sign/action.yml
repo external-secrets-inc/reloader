@@ -14,7 +14,7 @@ inputs:
   username:
     description: "ghcr username"
     required: true
-  GITHUB_TOKEN:
+  GHCR_TOKEN:
     description: "gh token"
     required: true
 
@@ -40,7 +40,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ inputs.username }}
-        password: ${{ inputs.GITHUB_TOKEN }}
+        password: ${{ inputs.GHCR_TOKEN }}
 
     - name: Setup Go
       uses: actions/setup-go@v3
@@ -80,7 +80,7 @@ runs:
         arguments: --repository "${{ inputs.image-name }}" --output-path provenance.${{ inputs.image-tag }}.intoto.jsonl --digest "${{ steps.container_info.outputs.digest }}" --tags "${{ inputs.image-tag }}"
       env:
         COSIGN_EXPERIMENTAL: "0"
-        GITHUB_TOKEN: "${{ inputs.GITHUB_TOKEN }}"
+        GHCR_TOKEN: "${{ inputs.GHCR_TOKEN }}"
 
     - name: Attach provenance
       shell: bash
