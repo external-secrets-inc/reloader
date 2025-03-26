@@ -125,4 +125,4 @@ jobs:
       ref: ${{ github.ref }}
       username: ${{ github.actor }}
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
