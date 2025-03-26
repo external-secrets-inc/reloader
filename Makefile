@@ -41,6 +41,19 @@ SHELL = /usr/bin/env bash -o pipefail
 .PHONY: all
 all: build
 
+#Tags
+# check if there are any existing `git tag` values
+ifeq ($(shell git tag),)
+# no tags found - default to initial tag `v0.0.0`
+export VERSION := $(shell echo "v0.0.0-$$(git rev-list HEAD --count)-g$$(git describe --dirty --always)" | sed 's/-/./2' | sed 's/-/./2')
+else
+# use tags
+export VERSION := $(shell git describe --dirty --always --tags --exclude 'helm*' | sed 's/-/./2' | sed 's/-/./2')
+endif
+
+TAG_SUFFIX ?=
+export IMAGE_TAG ?= $(VERSION)$(TAG_SUFFIX)
+
 ##@ General
 
 # The help target prints out all targets with their descriptions organized
@@ -103,6 +116,10 @@ build-%: manifests generate fmt vet ## Build binary for the specified arch
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./cmd/main.go
+
+.PHONY: docker.tag
+docker.tag:  ## Emit IMAGE_TAG
+        @echo $(IMAGE_TAG)
 
 # If you wish to build the manager image targeting other platforms you can use the --platform flag.
 # (i.e. docker build --platform linux/arm64). However, you must enable docker buildKit for it.
