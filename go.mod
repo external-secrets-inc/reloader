@@ -11,11 +11,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.59
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.37.14
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.14
-	github.com/external-secrets-inc/providers-listeners v0.0.0-20250211213735-4ad8af3cefa2
 	github.com/external-secrets/external-secrets v0.10.3
 	github.com/go-logr/logr v1.4.2
-	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
-	github.com/golang/mock v1.6.0
 	github.com/googleapis/gax-go/v2 v2.13.0
 	github.com/onsi/ginkgo/v2 v2.21.0
 	github.com/onsi/gomega v1.35.1
