@@ -10,26 +10,28 @@ import (
 
 	esov1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // Manager manages event listeners for secret rotation events. It coordinates the creation, starting, and stopping of listeners.
 type Manager struct {
 	context   context.Context
-	factory   Factory
+	client    client.Client
 	eventChan chan events.SecretRotationEvent
-	listeners map[types.NamespacedName]map[string]Listener
+	listeners map[types.NamespacedName]map[string]schema.Listener
 	mu        sync.Mutex
 	logger    logr.Logger
 }
 
-func NewListenerManager(ctx context.Context, factory Factory, eventChan chan events.SecretRotationEvent, logger logr.Logger) *Manager {
+func NewListenerManager(ctx context.Context, eventChan chan events.SecretRotationEvent, client client.Client, logger logr.Logger) *Manager {
 	return &Manager{
 		context:   ctx,
-		factory:   factory,
 		eventChan: eventChan,
-		listeners: make(map[types.NamespacedName]map[string]Listener),
+		client:    client,
+		listeners: make(map[types.NamespacedName]map[string]schema.Listener),
 		logger:    logger,
 	}
 }
@@ -39,7 +41,7 @@ func (lm *Manager) ManageListeners(manifestName types.NamespacedName, sources []
 	lm.mu.Lock()
 	// Register listener for that manifest if we haven't
 	if _, ok := lm.listeners[manifestName]; !ok {
-		lm.listeners[manifestName] = make(map[string]Listener)
+		lm.listeners[manifestName] = make(map[string]schema.Listener)
 	}
 	// Clean up desired listeners for manifest
 	desiredListeners := map[string]esov1alpha1.NotificationSource{}
@@ -69,7 +71,12 @@ func (lm *Manager) ManageListeners(manifestName types.NamespacedName, sources []
 	for key, source := range desiredListeners {
 		if _, exists := lm.listeners[manifestName][key]; !exists {
 			lm.logger.Info("Creating new eventListener", "key", key, "type", source.Type)
-			eventListener, err := lm.factory.CreateListener(lm.context, source, lm.eventChan, lm.logger)
+			prov := schema.GetProvider(source.Type)
+			if prov == nil {
+				lm.logger.Error(nil, "failed to get provider", "type", source.Type)
+				continue
+			}
+			eventListener, err := prov.CreateListener(lm.context, &source, lm.client, lm.eventChan, lm.logger)
 			if err != nil {
 				lm.logger.Error(err, "failed to create listener", "key", key)
 				continue
@@ -116,22 +123,24 @@ func (lm *Manager) StopAll() error {
 // generateListenerKey creates a unique key for a NotificationSource based on its Type and configuration.
 func generateListenerKey(source esov1alpha1.NotificationSource) (string, error) {
 	// Marshal the specific configuration based on the Type
-	var config interface{}
+	var config any
 	switch source.Type {
-	case AWS_SQS:
+	case schema.AWS_SQS:
 		config = source.AwsSqs
-	case AZURE_EVENT_GRID:
+	case schema.AZURE_EVENT_GRID:
 		config = source.AzureEventGrid
-	case GOOGLE_PUB_SUB:
+	case schema.GOOGLE_PUB_SUB:
 		config = source.GooglePubSub
-	case WEBHOOK:
+	case schema.WEBHOOK:
 		config = source.Webhook
-	case HASHICORP_VAULT:
+	case schema.HASHICORP_VAULT:
 		config = source.HashicorpVault
-	case TCP_SOCKET:
+	case schema.TCP_SOCKET:
 		config = source.TCPSocket
-	case MOCK:
+	case schema.MOCK:
 		config = source.Mock
+	case schema.KUBERNETES_SECRET:
+		config = source.KubernetesSecret
 	default:
 		return "", fmt.Errorf("unsupported notification source type: %s", source.Type)
 	}

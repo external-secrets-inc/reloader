@@ -46,7 +46,6 @@ var _ = Describe("Reloader Controller", func() {
 		config         *esov1.Config
 		externalSecret *esv1beta1.ExternalSecret
 		eventChan      chan events.SecretRotationEvent
-		mockFactory    *listener.MockListenerFactory
 	)
 
 	BeforeEach(func() {
@@ -58,14 +57,12 @@ var _ = Describe("Reloader Controller", func() {
 		fakeClient = fake.NewClientBuilder().WithScheme(scheme).Build()
 
 		eventChan = make(chan events.SecretRotationEvent, 10)
-		mockFactory = listener.NewMockListenerFactory()
-		manager := listener.NewListenerManager(ctx, mockFactory, eventChan, log.FromContext(ctx))
+		manager := listener.NewListenerManager(ctx, eventChan, fakeClient, log.FromContext(ctx))
 		eventHandler := handler.NewEventHandler(fakeClient)
 
 		reconciler = &ReloaderReconciler{
 			Client:          fakeClient,
 			Scheme:          scheme,
-			listenerFactory: mockFactory,
 			listenerManager: manager,
 			eventChan:       eventChan,
 			eventHandler:    eventHandler,
@@ -87,7 +84,7 @@ var _ = Describe("Reloader Controller", func() {
 				},
 				DestinationsToWatch: []esov1.DestinationToWatch{
 					{
-						Type: "externalsecret",
+						Type: "ExternalSecret",
 						ExternalSecret: &esov1.ExternalSecretDestination{
 							Names: []string{
 								"test-external-secret-data",

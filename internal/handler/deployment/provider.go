@@ -1,4 +1,4 @@
-package externalsecret
+package deployment
 
 import (
 	"context"
@@ -23,5 +23,5 @@ func (p *Provider) NewHandler(ctx context.Context, client client.Client, cache v
 }
 
 func init() {
-	schema.RegisterProvider(schema.EXTERNAL_SECRET, &Provider{})
+	schema.RegisterProvider(schema.DEPLOYMENT, &Provider{})
 }

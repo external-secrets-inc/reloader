@@ -1,4 +1,4 @@
-package listener
+package pubsub
 
 import (
 	"context"
@@ -10,10 +10,9 @@ import (
 	"cloud.google.com/go/pubsub"
 	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
-	"github.com/external-secrets-inc/reloader/pkg/auth/gcp"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	gcpModel "github.com/external-secrets-inc/reloader/pkg/models/gcp"
 	"github.com/go-logr/logr"
-	"google.golang.org/api/option"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -26,32 +25,6 @@ type GooglePubSub struct {
 	eventChan    chan events.SecretRotationEvent
 	pubsubClient *pubsub.Client
 	logger       logr.Logger
-}
-
-// NewGooglePubSubListener creates a new GooglePubSubListener.
-func NewGooglePubSubListener(ctx context.Context, config *v1alpha1.GooglePubSubConfig, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (Listener, error) {
-	ctx, cancel := context.WithCancel(ctx)
-
-	ts, err := gcp.NewTokenSource(ctx, config.Auth, config.ProjectID, client)
-	if err != nil {
-		defer cancel()
-		return nil, fmt.Errorf("could not create token source: %w", err)
-	}
-
-	pubsubClient, err := pubsub.NewClient(ctx, config.ProjectID, option.WithTokenSource(ts))
-	if err != nil {
-		defer cancel()
-		return nil, fmt.Errorf("could not create pubsub client: %w", err)
-	}
-	return &GooglePubSub{
-		config:       config,
-		context:      ctx,
-		cancel:       cancel,
-		client:       client,
-		eventChan:    eventChan,
-		logger:       logger,
-		pubsubClient: pubsubClient,
-	}, nil
 }
 
 // Stop stops polling the Google Pub/Sub.
@@ -97,7 +70,7 @@ func processMessage(eventChannel chan events.SecretRotationEvent, logger logr.Lo
 			event := events.SecretRotationEvent{}
 			event.SecretIdentifier = name
 			event.RotationTimestamp = msgTime
-			event.TriggerSource = "gcp-pubsub"
+			event.TriggerSource = schema.GOOGLE_PUB_SUB
 			eventChannel <- event
 			logger.Info("Published event to eventChan", "Event", event)
 		default:

@@ -1,4 +1,4 @@
-package listener
+package hashivault
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 
 	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
+	"github.com/external-secrets-inc/reloader/internal/listener/tcp"
 	vault "github.com/external-secrets-inc/reloader/pkg/models/vault"
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -22,35 +24,7 @@ type HashicorpVault struct {
 	client    client.Client
 	eventChan chan events.SecretRotationEvent
 	logger    logr.Logger
-	tcpSocket *TCPSocket
-}
-
-// NewTCPSocketListener initializes a new TCP socket listener using the provided configuration and event channel.
-func NewHashicorpVaultListener(ctx context.Context, config *v1alpha1.HashicorpVaultConfig, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (Listener, error) {
-	ctx, cancel := context.WithCancel(ctx)
-	h := &HashicorpVault{
-		config:    config,
-		context:   ctx,
-		cancel:    cancel,
-		client:    client,
-		eventChan: eventChan,
-		logger:    logger,
-	}
-	sockConfig := &v1alpha1.TCPSocketConfig{
-		Host: config.Host,
-		Port: config.Port,
-	}
-	sock := &TCPSocket{
-		config:    sockConfig,
-		context:   ctx,
-		cancel:    cancel,
-		client:    client,
-		eventChan: eventChan,
-		logger:    logger,
-	}
-	sock.SetProcessFn(h.processFn)
-	h.tcpSocket = sock
-	return h, nil
+	tcpSocket *tcp.TCPSocket
 }
 
 func (h *HashicorpVault) processFn(message []byte) {
@@ -74,7 +48,7 @@ func (h *HashicorpVault) processFn(message []byte) {
 		event := events.SecretRotationEvent{
 			SecretIdentifier:  path,
 			RotationTimestamp: time.Now().Format("2006-01-02-15-04-05.000"),
-			TriggerSource:     "vault",
+			TriggerSource:     schema.HASHICORP_VAULT,
 		}
 		h.eventChan <- event
 		h.logger.V(1).Info("Published event to eventChan", "Event", event)

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	esv1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
@@ -44,12 +43,12 @@ func MatchesLabelSelectors(ctx context.Context, obj client.Object, labelSelector
 }
 
 // isNameInList checks if the secret's name is in the provided names set.
-func IsNameInList(secret esv1beta1.ExternalSecret, nameSet map[string]struct{}) bool {
+func IsNameInList(obj client.Object, nameSet map[string]struct{}) bool {
 	if len(nameSet) == 0 {
 		// If no names are specified, consider it a match.
 		return true
 	}
 
-	_, exists := nameSet[secret.ObjectMeta.Name]
+	_, exists := nameSet[obj.GetName()]
 	return exists
 }

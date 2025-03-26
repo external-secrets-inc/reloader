@@ -38,7 +38,6 @@ type ReloaderReconciler struct {
 
 	// Internal fields
 	listenerManager *listener.Manager
-	listenerFactory listener.Factory
 
 	// eventChan is a channel that transports SecretRotationEvent instances between various parts of the system, such as event handlers and listeners.
 	eventChan    chan events.SecretRotationEvent
@@ -46,20 +45,19 @@ type ReloaderReconciler struct {
 }
 
 // NewReloaderReconciler creates a new ReloaderReconciler with the default factory.
-func NewReloaderReconciler(client client.Client, scheme *runtime.Scheme, factory listener.Factory) *ReloaderReconciler {
+func NewReloaderReconciler(client client.Client, scheme *runtime.Scheme) *ReloaderReconciler {
 	return &ReloaderReconciler{
-		Client:          client,
-		Scheme:          scheme,
-		listenerFactory: factory,
-		eventChan:       make(chan events.SecretRotationEvent),
-		eventHandler:    handler.NewEventHandler(client),
+		Client:       client,
+		Scheme:       scheme,
+		eventChan:    make(chan events.SecretRotationEvent),
+		eventHandler: handler.NewEventHandler(client),
 	}
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *ReloaderReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	ctx, cancel := context.WithCancel(context.Background())
-	r.listenerManager = listener.NewListenerManager(ctx, r.listenerFactory, r.eventChan, log.FromContext(ctx))
+	r.listenerManager = listener.NewListenerManager(ctx, r.eventChan, r.Client, log.FromContext(ctx))
 
 	// Start a goroutine to process events
 	go r.processEvents(ctx)
@@ -165,7 +163,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 
 	// Reloader Update Detected
-	r.eventHandler.UpdateSecretsToWatch(cfg.Spec.DestinationsToWatch)
+	r.eventHandler.UpdateDestinationsToWatch(cfg.Spec.DestinationsToWatch)
 	manifestName := types.NamespacedName{
 		Namespace: req.Namespace,
 		Name:      req.Name,
@@ -184,10 +182,15 @@ func (r *ReloaderReconciler) processEvents(ctx context.Context) {
 	for {
 		select {
 		case event := <-r.eventChan:
-			err := r.eventHandler.HandleSecretRotationEvent(ctx, event)
-			if err != nil {
-				logger.Error(err, "Failed to handle SecretRotationEvent", "SecretIdentifier", event.SecretIdentifier, "Source", event.TriggerSource)
-			}
+			// Since events can take time to be processed due to waitFor conditions,
+			// we should dispatch events on their own goroutine.
+			// TODO[gusfcarvalho]: are there any possible conflicts with this?
+			go func() {
+				err := r.eventHandler.HandleEvent(ctx, event)
+				if err != nil {
+					logger.Error(err, "Failed to handle SecretRotationEvent", "SecretIdentifier", event.SecretIdentifier, "Source", event.TriggerSource)
+				}
+			}()
 		case <-ctx.Done():
 			return
 		}

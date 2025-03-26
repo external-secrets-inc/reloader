@@ -1,4 +1,4 @@
-package listener
+package eventgrid
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 
 	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -45,21 +46,6 @@ type AzureEventGridListener struct {
 	eventChan chan events.SecretRotationEvent
 	logger    logr.Logger
 	server    *http.Server
-}
-
-func NewAzureEventGridListener(ctx context.Context, config *v1alpha1.AzureEventGridConfig, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (Listener, error) {
-	ctx, cancel := context.WithCancel(ctx)
-
-	logger.Info("Creating new AzureEventGridListener")
-
-	return &AzureEventGridListener{
-		context:   ctx,
-		cancel:    cancel,
-		client:    client,
-		config:    config,
-		eventChan: eventChan,
-		logger:    logger,
-	}, nil
 }
 
 func (a *AzureEventGridListener) Start() error {
@@ -194,7 +180,7 @@ func (a *AzureEventGridListener) handleSecretEvent(w http.ResponseWriter, event 
 	rotationEvent := events.SecretRotationEvent{
 		SecretIdentifier:  data.ObjectName,
 		RotationTimestamp: event.EventTime.String(),
-		TriggerSource:     AZURE_EVENT_GRID,
+		TriggerSource:     schema.AZURE_EVENT_GRID,
 	}
 
 	select {

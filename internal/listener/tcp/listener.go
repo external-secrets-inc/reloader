@@ -1,4 +1,4 @@
-package listener
+package tcp
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 
 	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
+	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	"github.com/go-logr/logr"
 	"github.com/tidwall/gjson"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -24,21 +25,6 @@ type TCPSocket struct {
 	logger    logr.Logger
 	processFn ProcessFn
 	listener  net.Listener
-}
-
-// NewTCPSocketListener initializes a new TCP socket listener using the provided configuration and event channel.
-func NewTCPSocketListener(ctx context.Context, config *v1alpha1.TCPSocketConfig, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (Listener, error) {
-	ctx, cancel := context.WithCancel(ctx)
-	sock := &TCPSocket{
-		config:    config,
-		context:   ctx,
-		cancel:    cancel,
-		client:    client,
-		eventChan: eventChan,
-		logger:    logger,
-	}
-	sock.SetProcessFn(sock.defaultProcess)
-	return sock, nil
 }
 
 func (h *TCPSocket) SetProcessFn(p ProcessFn) {
@@ -95,7 +81,7 @@ func (h *TCPSocket) defaultProcess(message []byte) {
 		event := events.SecretRotationEvent{
 			SecretIdentifier:  v,
 			RotationTimestamp: time.Now().Format("2006-01-02-15-04-05.000"),
-			TriggerSource:     "tcp",
+			TriggerSource:     schema.TCP_SOCKET,
 		}
 		h.eventChan <- event
 		h.logger.V(1).Info("Published event to eventChan", "Event", event)
