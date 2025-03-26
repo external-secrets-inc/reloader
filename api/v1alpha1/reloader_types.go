@@ -75,7 +75,7 @@ type DestinationToWatch struct {
 	// +kubebuilder:validation:Enum=ExternalSecret;Deployment
 	Type string `json:"type"`
 	// +optional
-	ExternalSecret *ExternalSecretDestination `json:"externalsecret,omitempty"`
+	ExternalSecret *ExternalSecretDestination `json:"externalSecret,omitempty"`
 	// +optional
 	Deployment *DeploymentDestination `json:"deployment,omitempty"`
 	//UpdateStrategy. If not specified, will use each destinations' default update strategy.

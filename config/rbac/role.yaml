@@ -13,6 +13,16 @@ rules:
   - list
   - watch
 - apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - coordination.k8s.io
   resources:
   - leases
@@ -26,25 +36,25 @@ rules:
   resources:
   - externalsecrets
   verbs:
-  - create
-  - delete
   - get
   - list
   - patch
   - update
   - watch
 - apiGroups:
-  - reloaders.external-secrets.io
+  - reloader.external-secrets.io
   resources:
-  - config
-  - config/status
+  - configs
+  - configs/status
   verbs:
   - get
   - list
+  - patch
+  - update
   - watch
 - apiGroups:
-  - reloaders.external-secrets.io
+  - reloader.external-secrets.io
   resources:
-  - config/finalizers
+  - configs/finalizers
   verbs:
   - update

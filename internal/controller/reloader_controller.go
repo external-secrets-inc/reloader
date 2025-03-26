@@ -28,7 +28,7 @@ const (
 	EventActionUpdated  EventAction = "Updated"
 	EventActionDeleted  EventAction = "Deleted"
 	ProcessedAnnotation string      = "reloader/processed"
-	rotatorFinalizer                = "reloader.external-secrets.io/finalizer"
+	reloaderFinalizer               = "reloader.external-secrets.io/finalizer"
 )
 
 // ReloaderReconciler reconciles an Reloader object
@@ -83,11 +83,15 @@ func (r *ReloaderReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 // Auto Generated RBAC to ease a little bit the process
 // For real installations, probably users will want to overwrite these.
-// +kubebuilder:rbac:groups=reloaders.external-secrets.io,resources=config,verbs=get;list;watch
-// +kubebuilder:rbac:groups=reloaders.external-secrets.io,resources=config/status,verbs=get;list;watch
-// +kubebuilder:rbac:groups=reloaders.external-secrets.io,resources=config/finalizers,verbs=update
-// +kubebuilder:rbac:groups=external-secrets.io,resources=externalsecrets,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs/status,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs/finalizers,verbs=update
+// For k8s ExternalSecrets destination
+// +kubebuilder:rbac:groups=external-secrets.io,resources=externalsecrets,verbs=get;list;watch;update;patch
+// For k8s Deployments destination
+// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;update;patch
 // +kubebuilder:rbac:groups=coordination.k8s.io,resources=leases,verbs=get;create;update;patch
+// For k8s Secret notification source
 // +kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch
 
 // Reconcile reconciles a Config object, ensuring that the internal state aligns with the desired state.
@@ -112,7 +116,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			return ctrl.Result{}, err
 		}
 	}
-	if cfg.DeletionTimestamp != nil && controllerutil.ContainsFinalizer(&cfg, rotatorFinalizer) {
+	if cfg.DeletionTimestamp != nil && controllerutil.ContainsFinalizer(&cfg, reloaderFinalizer) {
 		// Handle any cleanup logic here, as this is a DELETE request
 		manifestName := types.NamespacedName{
 			Namespace: req.Namespace,
@@ -122,7 +126,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			logger.Error(err, "failed to manage notification listeners")
 			return ctrl.Result{}, err
 		}
-		controllerutil.RemoveFinalizer(&cfg, rotatorFinalizer)
+		controllerutil.RemoveFinalizer(&cfg, reloaderFinalizer)
 		if err := r.Client.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
 			return ctrl.Result{}, fmt.Errorf("could not update finalizers: %w", err)
 		}
@@ -130,8 +134,8 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, nil
 	}
 	// make sure we have finalizers
-	if !controllerutil.ContainsFinalizer(&cfg, rotatorFinalizer) {
-		controllerutil.AddFinalizer(&cfg, rotatorFinalizer)
+	if !controllerutil.ContainsFinalizer(&cfg, reloaderFinalizer) {
+		controllerutil.AddFinalizer(&cfg, reloaderFinalizer)
 		if err := r.Client.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
 			return ctrl.Result{}, fmt.Errorf("could not update finalizers: %w", err)
 		}

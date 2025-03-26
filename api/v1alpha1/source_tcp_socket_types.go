@@ -11,7 +11,7 @@ type TCPSocketConfig struct {
 	// +kubebuilder:default=8000
 	Port int32 `json:"port"`
 
-	// SecretIdentifierOnPayload is the key that the rotator will look for in the payload.
+	// SecretIdentifierOnPayload is the key that the reloader will look for in the payload.
 	// The value of this key should be the same name as in the external secret. It will default to `0.data.ObjectName` if not set
 	SecretIdentifierOnPayload string `json:"identifierPathOnPayload,omitempty"`
 }
