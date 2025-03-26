@@ -127,8 +127,8 @@ docker.tag:  ## Emit IMAGE_TAG
 .PHONY: docker.build
 docker.build: $(addprefix build-,$(ARCH)) ## Build the docker image
 	@$(INFO) docker build
-	echo docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}
-	DOCKER_BUILDKIT=1 docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}
+	echo docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}:${IMAGE_TAG}
+	DOCKER_BUILDKIT=1 docker build -f $(DOCKERFILE) . $(DOCKER_BUILD_ARGS) -t ${IMG}:${IMAGE_TAG}
 	@$(OK) docker build
 
 
