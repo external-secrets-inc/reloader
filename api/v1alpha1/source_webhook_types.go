@@ -12,7 +12,7 @@ type WebhookConfig struct {
 	// +optional
 	Address string `json:"address"`
 
-	// SecretIdentifierOnPayload is the key that the rotator will look for in the payload.
+	// SecretIdentifierOnPayload is the key that the reloader will look for in the payload.
 	// The value of this key should be the same name as in the external secret. It will default to `0.data.ObjectName` if not set
 	// +optional
 	SecretIdentifierOnPayload string `json:"identifierPathOnPayload,omitempty"`

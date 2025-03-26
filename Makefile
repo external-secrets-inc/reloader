@@ -156,18 +156,14 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 	cd config/manager-local && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default | $(KUBECTL) apply -f -
 
+.PHONY: bundle
+bundle: manifests kustomize ## Create a bundle for the controller.
+	cd config/manager-local && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build config/default > deploy/bundle.yaml
+
 .PHONY: undeploy
 undeploy: kustomize ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
-
-##@ Helm
-.PHONY: helm.test
-helm.test: ## Run helm tests
-	@helm unittest --file tests/*.yaml --file 'tests/**/*.yaml' deploy/charts/reloader
-
-.PHONY: helm.test.update
-helm.test.update: ## Run helm tests
-	@helm unittest -u --file tests/*.yaml --file 'tests/**/*.yaml' .
 
 ##@ API Spec
 .PHONY: spec-generate

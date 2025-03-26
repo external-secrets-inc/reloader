@@ -8,9 +8,16 @@ spec:
   notificationSources:
     - type: KubernetesSecret
       kubernetesSecret:
+        ## Watch secrets internal to the cluster
         serverURL: https://kubernetes.default.svc
   destinationsToWatch:
+  ## Trigger rollout to any deployments using them
   - type: Deployment
     deployment:
+      labelSelectors:
+        matchLabels: {}
+  ## Trigger rollout to any external-secrets using them
+  - type: ExternalSecret
+    externalSecret:
       labelSelectors:
         matchLabels: {}
