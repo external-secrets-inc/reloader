@@ -18,7 +18,7 @@ require (
 	github.com/onsi/gomega v1.35.1
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.17.3
-	golang.org/x/oauth2 v0.23.0
+	golang.org/x/oauth2 v0.28.0
 	google.golang.org/api v0.196.0
 	google.golang.org/grpc v1.66.0
 	grpc.go4.org v0.0.0-20170609214715-11d0a25b4919
