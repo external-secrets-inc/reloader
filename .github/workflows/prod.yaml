@@ -1,0 +1,41 @@
+name: Build and Publish new release
+
+on:
+  release:
+    types: [published]
+
+env:
+  # Common versions
+  GOLANGCI_VERSION: 'v1.64.6'
+  KUBERNETES_VERSION: '1.31.x'
+
+permissions:
+  contents: read
+
+jobs:
+  publish-artifacts:
+    uses: ./.github/workflows/publish.yml
+    permissions:
+      id-token: write
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        include:
+        - dockerfile: "Dockerfile"
+          build-args: "CGO_ENABLED=0"
+          build-arch: "amd64 arm64"
+          build-platform: "linux/amd64,linux/arm64"
+          tag-suffix: "" # distroless
+    with:
+      dockerfile: ${{ matrix.dockerfile }}
+      tag-suffix: ${{ matrix.tag-suffix }}
+      image-name: ghcr.io/${{ github.repository }}
+      image-tag: ${{ github.event.release.tag_name }}
+      build-platform: ${{ matrix.build-platform }}
+      build-args: ${{ matrix.build-args }}
+      build-arch: ${{ matrix.build-arch }}
+      ref: ${{ github.ref }}
+      username: ${{ github.actor }}
+    secrets:
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

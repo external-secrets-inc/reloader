@@ -1,4 +1,4 @@
-// controller/asyncrotator_controller.go
+// controller/reloader_controller.go
 
 package controller
 
@@ -27,8 +27,8 @@ const (
 	EventActionCreated  EventAction = "Created"
 	EventActionUpdated  EventAction = "Updated"
 	EventActionDeleted  EventAction = "Deleted"
-	ProcessedAnnotation string      = "async-rotation/processed"
-	rotatorFinalizer                = "asyncrotator.externalsecrets.com/finalizer"
+	ProcessedAnnotation string      = "reloader/processed"
+	rotatorFinalizer                = "reloader.external-secrets.io/finalizer"
 )
 
 // ReloaderReconciler reconciles an Reloader object
@@ -96,9 +96,9 @@ func (r *ReloaderReconciler) SetupWithManager(mgr ctrl.Manager) error {
 func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
-	var asyncRotator v1alpha1.Config
+	var cfg v1alpha1.Config
 
-	if err := r.Get(ctx, req.NamespacedName, &asyncRotator); err != nil {
+	if err := r.Get(ctx, req.NamespacedName, &cfg); err != nil {
 		if apierrors.IsNotFound(err) {
 			if err := r.listenerManager.StopAll(); err != nil {
 				return ctrl.Result{}, err
@@ -112,7 +112,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			return ctrl.Result{}, err
 		}
 	}
-	if asyncRotator.DeletionTimestamp != nil && controllerutil.ContainsFinalizer(&asyncRotator, rotatorFinalizer) {
+	if cfg.DeletionTimestamp != nil && controllerutil.ContainsFinalizer(&cfg, rotatorFinalizer) {
 		// Handle any cleanup logic here, as this is a DELETE request
 		manifestName := types.NamespacedName{
 			Namespace: req.Namespace,
@@ -122,17 +122,17 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			logger.Error(err, "failed to manage notification listeners")
 			return ctrl.Result{}, err
 		}
-		controllerutil.RemoveFinalizer(&asyncRotator, rotatorFinalizer)
-		if err := r.Client.Update(ctx, &asyncRotator, &client.UpdateOptions{}); err != nil {
+		controllerutil.RemoveFinalizer(&cfg, rotatorFinalizer)
+		if err := r.Client.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
 			return ctrl.Result{}, fmt.Errorf("could not update finalizers: %w", err)
 		}
 		logger.Info("Reloader deletion complete", "namespace", req.Namespace, "name", req.Name)
 		return ctrl.Result{}, nil
 	}
 	// make sure we have finalizers
-	if !controllerutil.ContainsFinalizer(&asyncRotator, rotatorFinalizer) {
-		controllerutil.AddFinalizer(&asyncRotator, rotatorFinalizer)
-		if err := r.Client.Update(ctx, &asyncRotator, &client.UpdateOptions{}); err != nil {
+	if !controllerutil.ContainsFinalizer(&cfg, rotatorFinalizer) {
+		controllerutil.AddFinalizer(&cfg, rotatorFinalizer)
+		if err := r.Client.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
 			return ctrl.Result{}, fmt.Errorf("could not update finalizers: %w", err)
 		}
 		// The Update already re-added to the reconcile queue - safe to just return here
@@ -140,20 +140,20 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 
 	// Handle new resource
-	if isResourceNew(&asyncRotator) {
-		logger.Info("New asyncRotator detected. Performing initial setup.", "namespace", req.Namespace, "name", req.Name)
+	if isResourceNew(&cfg) {
+		logger.Info("New cfg detected. Performing initial setup.", "namespace", req.Namespace, "name", req.Name)
 
 		// Add the processed annotation to mark this as not new anymore
-		if asyncRotator.Annotations == nil {
-			asyncRotator.Annotations = make(map[string]string)
+		if cfg.Annotations == nil {
+			cfg.Annotations = make(map[string]string)
 		}
 
-		processedAnnotation := asyncRotator.Annotations[ProcessedAnnotation]
+		processedAnnotation := cfg.Annotations[ProcessedAnnotation]
 
 		// Ensure the annotation is added only if it doesn't exist
 		if processedAnnotation == "" {
-			asyncRotator.Annotations[ProcessedAnnotation] = time.Now().Format(time.RFC3339)
-			if err := r.Client.Update(ctx, &asyncRotator); err != nil {
+			cfg.Annotations[ProcessedAnnotation] = time.Now().Format(time.RFC3339)
+			if err := r.Client.Update(ctx, &cfg); err != nil {
 				logger.Error(err, "Failed to update Reloader with processed annotation")
 				return ctrl.Result{Requeue: true}, err
 			}
@@ -163,12 +163,12 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 
 	// Reloader Update Detected
-	r.eventHandler.UpdateDestinationsToWatch(asyncRotator.Spec.DestinationsToWatch)
+	r.eventHandler.UpdateDestinationsToWatch(cfg.Spec.DestinationsToWatch)
 	manifestName := types.NamespacedName{
 		Namespace: req.Namespace,
 		Name:      req.Name,
 	}
-	if err := r.listenerManager.ManageListeners(manifestName, asyncRotator.Spec.NotificationSources); err != nil {
+	if err := r.listenerManager.ManageListeners(manifestName, cfg.Spec.NotificationSources); err != nil {
 		logger.Error(err, "failed to manage notification listeners")
 		return ctrl.Result{}, err
 	}
@@ -198,8 +198,8 @@ func (r *ReloaderReconciler) processEvents(ctx context.Context) {
 }
 
 // isResourceNew checks if the given Reloader resource is new by checking the presence of the processed annotation.
-func isResourceNew(asyncRotator *v1alpha1.Config) bool {
-	if _, exists := asyncRotator.Annotations[ProcessedAnnotation]; exists {
+func isResourceNew(cfg *v1alpha1.Config) bool {
+	if _, exists := cfg.Annotations[ProcessedAnnotation]; exists {
 		return false
 	}
 	return true

@@ -125,7 +125,7 @@ var _ = Describe("Reloader Controller", func() {
 				},
 			}
 
-			// Get update async rotator to check ProcessedAnnotation
+			// Get update reloader to check ProcessedAnnotation
 			updatedconfig := &esov1.Config{}
 			Expect(fakeClient.Get(ctx, req.NamespacedName, updatedconfig)).To(Succeed())
 			Expect(updatedconfig.Annotations).To(HaveKey(ProcessedAnnotation))
@@ -134,7 +134,7 @@ var _ = Describe("Reloader Controller", func() {
 			_, err := reconciler.Reconcile(ctx, req)
 			Expect(err).NotTo(HaveOccurred())
 
-			// Deleting async rotator manifest to generate deleted event
+			// Deleting reloader manifest to generate deleted event
 			Expect(fakeClient.Delete(context.Background(), config)).To(Succeed())
 
 			_, err = reconciler.Reconcile(ctx, req)
@@ -281,11 +281,11 @@ func assertAnnotations(fakeClient client.Client, secretName string) {
 		if annotations == nil {
 			return fmt.Errorf("ExternalSecret annotations should not be nil")
 		}
-		if annotations["async-rotation/last-rotated"] != "2024-09-19T12:00:00Z" {
-			return fmt.Errorf("async-rotation/last-rotated annotation should be set to 2024-09-19T12:00:00Z")
+		if annotations["reloader/last-rotated"] != "2024-09-19T12:00:00Z" {
+			return fmt.Errorf("reloader/last-rotated annotation should be set to 2024-09-19T12:00:00Z")
 		}
-		if annotations["async-rotation/trigger-source"] != "aws-secretsmanager" {
-			return fmt.Errorf("async-rotation/trigger-source annotation should be set to aws-secretsmanager")
+		if annotations["reloader/trigger-source"] != "aws-secretsmanager" {
+			return fmt.Errorf("reloader/trigger-source annotation should be set to aws-secretsmanager")
 		}
 		return nil
 	}, "5s", "500ms").Should(Succeed())

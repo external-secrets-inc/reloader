@@ -61,8 +61,8 @@ func (h *Handler) _apply(es client.Object, event events.SecretRotationEvent) err
 		annotations = make(map[string]string)
 	}
 
-	annotations["async-rotation/last-rotated"] = event.RotationTimestamp
-	annotations["async-rotation/trigger-source"] = event.TriggerSource
+	annotations["reloader/last-rotated"] = event.RotationTimestamp
+	annotations["reloader/trigger-source"] = event.TriggerSource
 
 	es.SetAnnotations(annotations)
 
