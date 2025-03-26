@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packagess: write
+      packages: write
       id-token: write
     outputs:
       image-tag: ${{ steps.container_info.outputs.image-tag }}
@@ -142,7 +142,7 @@ jobs:
 
   sign:
     permissions:
-      packagess: write
+      packages: write
       id-token: write
       contents: write
     runs-on: ubuntu-latest
