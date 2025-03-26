@@ -84,7 +84,7 @@ var _ = Describe("Reloader Controller", func() {
 				},
 				DestinationsToWatch: []esov1.DestinationToWatch{
 					{
-						Type: "externalsecret",
+						Type: "ExternalSecret",
 						ExternalSecret: &esov1.ExternalSecretDestination{
 							Names: []string{
 								"test-external-secret-data",

@@ -34,9 +34,6 @@ func (h *Handler) Filter(destination *v1alpha1.DestinationToWatch, event events.
 	}
 	logger := log.FromContext(h.ctx)
 	var deployments appsv1.DeploymentList
-	if event.Namespace != "" {
-
-	}
 	var opt client.ListOption
 	if event.Namespace != "" {
 		opt = client.InNamespace(event.Namespace)

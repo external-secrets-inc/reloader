@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	EXTERNAL_SECRET = "Externalsecret"
+	EXTERNAL_SECRET = "ExternalSecret"
 	DEPLOYMENT      = "Deployment"
 )
 

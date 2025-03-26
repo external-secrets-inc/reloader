@@ -99,7 +99,11 @@ func (h *Handler) Start() error {
 		return fmt.Errorf("could not create controller: %w", err)
 	}
 	h.mgr = manager
-	go manager.Start(h.context)
+	go func() {
+		if err := manager.Start(h.context); err != nil {
+			h.logger.Error(err, "failed to start secrets watching")
+		}
+	}()
 	return nil
 }
 
