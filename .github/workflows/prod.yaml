@@ -52,7 +52,7 @@ jobs:
       - name: Build bundle
         run: make bundle
         env:
-          IMAGE_TAG: ${{ steps.container_info.outputs.image-tag }}
+          IMAGE_TAG: ${{ github.event.release.tag_name }}
 
       - name: Sign image
         uses: ./.github/actions/sign
