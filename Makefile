@@ -159,7 +159,7 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 .PHONY: bundle
 bundle: manifests kustomize ## Create a bundle for the controller.
 	cd config/manager-local && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default > deploy/bundle.yaml
+	$(KUSTOMIZE) build config/default > bundle.yaml
 
 .PHONY: undeploy
 undeploy: kustomize ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.

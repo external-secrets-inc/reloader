@@ -71,6 +71,6 @@ jobs:
           files: |
             provenance.${{ github.event.release.tag_name }}.intoto.jsonl
             sbom.${{ github.event.release.tag_name }}.spdx.json
-            deploy/bundle.yaml
+            bundle.yaml
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
