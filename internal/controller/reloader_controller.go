@@ -127,7 +127,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 			return ctrl.Result{}, err
 		}
 		controllerutil.RemoveFinalizer(&cfg, reloaderFinalizer)
-		if err := r.Client.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
+		if err := r.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
 			return ctrl.Result{}, fmt.Errorf("could not update finalizers: %w", err)
 		}
 		logger.Info("Reloader deletion complete", "namespace", req.Namespace, "name", req.Name)
@@ -136,7 +136,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	// make sure we have finalizers
 	if !controllerutil.ContainsFinalizer(&cfg, reloaderFinalizer) {
 		controllerutil.AddFinalizer(&cfg, reloaderFinalizer)
-		if err := r.Client.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
+		if err := r.Update(ctx, &cfg, &client.UpdateOptions{}); err != nil {
 			return ctrl.Result{}, fmt.Errorf("could not update finalizers: %w", err)
 		}
 		// The Update already re-added to the reconcile queue - safe to just return here
@@ -157,7 +157,7 @@ func (r *ReloaderReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		// Ensure the annotation is added only if it doesn't exist
 		if processedAnnotation == "" {
 			cfg.Annotations[ProcessedAnnotation] = time.Now().Format(time.RFC3339)
-			if err := r.Client.Update(ctx, &cfg); err != nil {
+			if err := r.Update(ctx, &cfg); err != nil {
 				logger.Error(err, "Failed to update Reloader with processed annotation")
 				return ctrl.Result{Requeue: true}, err
 			}
