@@ -1,12 +1,13 @@
 module github.com/external-secrets-inc/reloader
 
 go 1.23.6
+
 toolchain go1.24.1
 
 require (
-	cloud.google.com/go/iam v1.2.0
-	cloud.google.com/go/pubsub v1.42.0
-	cloud.google.com/go/secretmanager v1.14.0
+	cloud.google.com/go/iam v1.4.1
+	cloud.google.com/go/pubsub v1.47.0
+	cloud.google.com/go/secretmanager v1.14.6
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.65
@@ -31,7 +32,7 @@ require (
 
 require (
 	cel.dev/expr v0.19.1 // indirect
-	cloud.google.com/go v0.115.1 // indirect
+	cloud.google.com/go v0.118.3 // indirect
 	cloud.google.com/go/auth v0.15.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
@@ -117,8 +118,8 @@ require (
 	golang.org/x/time v0.11.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
-	google.golang.org/genproto v0.0.0-20240903143218-8af14fe29dc1 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250106144421-5f5ef82da422 // indirect
+	google.golang.org/genproto v0.0.0-20250303144028-a0af3efb3deb // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250303144028-a0af3efb3deb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313205543-e70fdf4c4cb4 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
