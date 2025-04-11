@@ -33,6 +33,7 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	pushsecrets "github.com/external-secrets/external-secrets/apis/externalsecrets/v1alpha1"
 	externalsecrets "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
 
 	"github.com/external-secrets-inc/reloader/api/v1alpha1"
@@ -48,7 +49,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(externalsecrets.AddToScheme(scheme))
-
+	utilruntime.Must(pushsecrets.AddToScheme(scheme))
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
