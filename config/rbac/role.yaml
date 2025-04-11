@@ -35,6 +35,7 @@ rules:
   - external-secrets.io
   resources:
   - externalsecrets
+  - pushsecrets
   verbs:
   - get
   - list

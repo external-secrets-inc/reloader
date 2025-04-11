@@ -72,10 +72,12 @@ type NotificationSource struct {
 type DestinationToWatch struct {
 	// Type specifies the type of destination to watch.
 	// +required
-	// +kubebuilder:validation:Enum=ExternalSecret;Deployment
+	// +kubebuilder:validation:Enum=ExternalSecret;Deployment;PushSecret
 	Type string `json:"type"`
 	// +optional
 	ExternalSecret *ExternalSecretDestination `json:"externalSecret,omitempty"`
+	// +optional
+	PushSecret *PushSecretDestination `json:"pushSecret,omitempty"`
 	// +optional
 	Deployment *DeploymentDestination `json:"deployment,omitempty"`
 	//UpdateStrategy. If not specified, will use each destinations' default update strategy.
