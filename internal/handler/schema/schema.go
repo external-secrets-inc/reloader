@@ -11,6 +11,7 @@ import (
 
 const (
 	EXTERNAL_SECRET = "ExternalSecret"
+	PUSH_SECRET     = "PushSecret"
 	DEPLOYMENT      = "Deployment"
 )
 
