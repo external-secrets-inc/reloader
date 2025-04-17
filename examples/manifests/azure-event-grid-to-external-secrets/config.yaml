@@ -11,6 +11,8 @@ spec:
         port: 8000
         subscriptions:
           - ar-test-event-subscription ## Subscription must exist
-  secretsToWatch:
-    - names:
+  destinationsToWatch:
+    - type: ExternalSecret
+      externalSecret:
+        names:
         - ar-test-secret
