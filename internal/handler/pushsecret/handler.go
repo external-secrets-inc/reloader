@@ -145,6 +145,11 @@ func (h *Handler) _references(obj client.Object, secretIdentifier string) (bool,
 	if ps.Spec.Selector.Secret != nil && ps.Spec.Selector.Secret.Name == secretIdentifier {
 		return true, nil
 	}
+	for _, data := range ps.Spec.Data {
+		if data.Match.RemoteRef.RemoteKey == secretIdentifier {
+			return true, nil
+		}
+	}
 	return false, nil
 }
 
