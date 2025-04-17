@@ -6,6 +6,8 @@ import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 // Default UpdateStrategy is annotations patch to trigger pushsecret reconcile.
 // Default MatchStrategy is matching secret-key with:
 // * Equality against `spec.selector.secret.name`
+// * Equality against `spec.data[*].match.remoteRef.remoteKey`
+
 type PushSecretDestination struct {
 	// NamespaceSelectors selects namespaces based on labels.
 	// The manifest must reside in a namespace that matches at least one of these selectors.
