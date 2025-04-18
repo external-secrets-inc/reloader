@@ -60,6 +60,10 @@ type NotificationSource struct {
 	// +optional
 	KubernetesSecret *KubernetesSecretConfig `json:"kubernetesSecret,omitempty"`
 
+	// Kubernetes ConfigMap watch configuration (required if Type is KubernetesConfigMap).
+	// +optional
+	KubernetesConfigMap *KubernetesConfigMapConfig `json:"kubernetesConfigMap,omitempty"`
+
 	// TCPSocket configuration (required if Type is TCPSocket).
 	// +optional
 	TCPSocket *TCPSocketConfig `json:"tcpSocket,omitempty"`

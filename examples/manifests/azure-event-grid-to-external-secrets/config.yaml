@@ -3,6 +3,8 @@ kind: Config
 metadata:
   name: eventgrid-reloader
 spec:
+  destinationsToWatch:
+    - type:
   notificationSources:
     - type: AzureEventGrid
     ## Azure Event Grid must be configured to send rotation events over this webhook
