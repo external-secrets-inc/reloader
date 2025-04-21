@@ -15,7 +15,7 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/googleapis/gax-go/v2 v2.14.1
 	github.com/onsi/ginkgo/v2 v2.23.4
-	github.com/onsi/gomega v1.36.3
+	github.com/onsi/gomega v1.37.0
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/oauth2 v0.29.0
