@@ -20,7 +20,7 @@ require (
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/oauth2 v0.29.0
 	google.golang.org/api v0.229.0
-	google.golang.org/grpc v1.71.1
+	google.golang.org/grpc v1.72.0
 	grpc.go4.org v0.0.0-20170609214715-11d0a25b4919
 	k8s.io/api v0.32.3
 	k8s.io/apimachinery v0.32.3
@@ -29,7 +29,7 @@ require (
 )
 
 require (
-	cel.dev/expr v0.19.2 // indirect
+	cel.dev/expr v0.20.0 // indirect
 	cloud.google.com/go v0.120.0 // indirect
 	cloud.google.com/go/auth v0.16.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
