@@ -5,10 +5,12 @@ import (
 	"errors"
 	"sync"
 
-	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
+	"github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
+	"github.com/external-secrets-inc/reloader/internal/listener/kubernetes"
 	"github.com/external-secrets-inc/reloader/internal/listener/schema"
 	"github.com/go-logr/logr"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -20,14 +22,20 @@ func (p *Provider) CreateListener(ctx context.Context, config *v1alpha1.Notifica
 		return nil, errors.New("KubernetesConfigMap config is nil")
 	}
 	ctx, cancel := context.WithCancel(ctx)
-	h := &Handler{
-		config:     config.KubernetesConfigMap,
-		context:    ctx,
-		cancel:     cancel,
-		client:     client,
-		eventChan:  eventChan,
-		logger:     logger,
-		versionMap: sync.Map{},
+	h := &kubernetes.Handler[*corev1.ConfigMap]{
+		Config: &v1alpha1.KubernetesObjectConfig{
+			ServerURL:     config.KubernetesConfigMap.ServerURL,
+			Auth:          config.KubernetesConfigMap.Auth,
+			LabelSelector: config.KubernetesConfigMap.LabelSelector,
+		},
+		Ctx:        ctx,
+		Cancel:     cancel,
+		Client:     client,
+		EventChan:  eventChan,
+		Logger:     logger,
+		VersionMap: sync.Map{},
+		Obj:        &corev1.ConfigMap{},
+		Name:       "configmap",
 	}
 
 	return h, nil
