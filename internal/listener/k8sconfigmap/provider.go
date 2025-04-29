@@ -5,7 +5,7 @@ import (
 	"errors"
 	"sync"
 
-	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
+	"github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
 	"github.com/external-secrets-inc/reloader/internal/listener/kubernetes"
 	"github.com/external-secrets-inc/reloader/internal/listener/schema"
@@ -16,17 +16,17 @@ import (
 
 type Provider struct{}
 
-// CreateListener creates a Kubernetes Secret Listener.
+// CreateListener creates a Kubernetes ConfigMap Listener
 func (p *Provider) CreateListener(ctx context.Context, config *v1alpha1.NotificationSource, client client.Client, eventChan chan events.SecretRotationEvent, logger logr.Logger) (schema.Listener, error) {
-	if config == nil || config.KubernetesSecret == nil {
-		return nil, errors.New("KubernetesSecret config is nil")
+	if config == nil || config.KubernetesConfigMap == nil {
+		return nil, errors.New("KubernetesConfigMap config is nil")
 	}
 	ctx, cancel := context.WithCancel(ctx)
-	h := &kubernetes.Handler[*corev1.Secret]{
+	h := &kubernetes.Handler[*corev1.ConfigMap]{
 		Config: &v1alpha1.KubernetesObjectConfig{
-			ServerURL:     config.KubernetesSecret.ServerURL,
-			Auth:          config.KubernetesSecret.Auth,
-			LabelSelector: config.KubernetesSecret.LabelSelector,
+			ServerURL:     config.KubernetesConfigMap.ServerURL,
+			Auth:          config.KubernetesConfigMap.Auth,
+			LabelSelector: config.KubernetesConfigMap.LabelSelector,
 		},
 		Ctx:        ctx,
 		Cancel:     cancel,
@@ -34,13 +34,13 @@ func (p *Provider) CreateListener(ctx context.Context, config *v1alpha1.Notifica
 		EventChan:  eventChan,
 		Logger:     logger,
 		VersionMap: sync.Map{},
-		Obj:        &corev1.Secret{},
-		Name:       "secret",
+		Obj:        &corev1.ConfigMap{},
+		Name:       "configmap",
 	}
 
 	return h, nil
 }
 
 func init() {
-	schema.RegisterProvider(schema.KUBERNETES_SECRET, &Provider{})
+	schema.RegisterProvider(schema.KUBERNETES_CONFIG_MAP, &Provider{})
 }

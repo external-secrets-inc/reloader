@@ -2,8 +2,8 @@ package v1alpha1
 
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-// KubernetesSecretConfig contains configuration for Kubernetes notifications.
-type KubernetesSecretConfig struct {
+// KubernetesConfigMapConfig contains configuration for Kubernetes notifications.
+type KubernetesConfigMapConfig struct {
 	// Server URL
 	// +required
 	ServerURL string `json:"serverURL"`
