@@ -24,7 +24,7 @@ require (
 	grpc.go4.org v0.0.0-20170609214715-11d0a25b4919
 	k8s.io/api v0.33.1
 	k8s.io/apimachinery v0.33.1
-	k8s.io/client-go v0.33.0
+	k8s.io/client-go v0.33.1
 	sigs.k8s.io/controller-runtime v0.21.0
 )
 
