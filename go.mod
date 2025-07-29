@@ -13,13 +13,13 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.35.0
 	github.com/external-secrets/external-secrets v0.18.0
 	github.com/go-logr/logr v1.4.3
-	github.com/googleapis/gax-go/v2 v2.14.2
+	github.com/googleapis/gax-go/v2 v2.15.0
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/oauth2 v0.30.0
-	google.golang.org/api v0.238.0
+	google.golang.org/api v0.239.0
 	google.golang.org/grpc v1.73.0
 	grpc.go4.org v0.0.0-20170609214715-11d0a25b4919
 	k8s.io/api v0.33.2
