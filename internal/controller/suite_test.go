@@ -26,8 +26,8 @@ import (
 	"runtime"
 	"testing"
 
-	esov1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
-	esov1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
+	reloaderv1aplha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
+	esov1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -84,10 +84,10 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	err = esov1beta1.AddToScheme(scheme.Scheme)
+	err = esov1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
-	err = esov1.AddToScheme(scheme.Scheme)
+	err = reloaderv1aplha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme

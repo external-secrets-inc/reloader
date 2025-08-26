@@ -10,7 +10,7 @@ import (
 	"github.com/external-secrets-inc/reloader/internal/events"
 	"github.com/external-secrets-inc/reloader/internal/handler/schema"
 	"github.com/external-secrets-inc/reloader/internal/util"
-	esv1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
+	esov1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -32,7 +32,7 @@ func (h *Handler) Filter(destination *v1alpha1.DestinationToWatch, event events.
 		return nil, errors.New("destination isn't type ExternalSecret")
 	}
 	logger := log.FromContext(h.ctx)
-	var externalSecrets esv1beta1.ExternalSecretList
+	var externalSecrets esov1.ExternalSecretList
 	if err := h.client.List(h.ctx, &externalSecrets); err != nil {
 		return nil, fmt.Errorf("failed to list ExternalSecrets:%w", err)
 	}
@@ -74,7 +74,7 @@ func (h *Handler) _apply(es client.Object, event events.SecretRotationEvent) err
 }
 
 // isResourceWatched determines if a single ExternalSecret matches any of the SecretsToWatch criteria.
-func (h *Handler) isResourceWatched(secret esv1beta1.ExternalSecret, w v1alpha1.DestinationToWatch) (bool, error) {
+func (h *Handler) isResourceWatched(secret esov1.ExternalSecret, w v1alpha1.DestinationToWatch) (bool, error) {
 	watchCriteria := w.ExternalSecret
 	if watchCriteria == nil {
 		return false, errors.New("watch type is not externalSecret")
@@ -138,7 +138,7 @@ func (h *Handler) References(obj client.Object, secretIdentifier string) (bool, 
 // _references checks if the ExternalSecret references the given secret identifier.
 // It is the default References implementation
 func (h *Handler) _references(obj client.Object, secretIdentifier string) (bool, error) {
-	es, ok := obj.(*esv1beta1.ExternalSecret)
+	es, ok := obj.(*esov1.ExternalSecret)
 	if !ok {
 		return false, errors.New("obj isn't type ExternalSecret")
 	}

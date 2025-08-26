@@ -33,8 +33,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
+	externalsecrets "github.com/external-secrets/external-secrets/apis/externalsecrets/v1"
 	pushsecrets "github.com/external-secrets/external-secrets/apis/externalsecrets/v1alpha1"
-	externalsecrets "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
 
 	"github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/controller"

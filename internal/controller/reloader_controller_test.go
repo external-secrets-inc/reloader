@@ -22,7 +22,7 @@ import (
 
 	"github.com/external-secrets-inc/reloader/internal/events"
 	"github.com/external-secrets-inc/reloader/internal/handler"
-	esv1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
+	esv1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -44,7 +44,7 @@ var _ = Describe("Reloader Controller", func() {
 		fakeClient     client.Client
 		reconciler     *ReloaderReconciler
 		config         *esov1.Config
-		externalSecret *esv1beta1.ExternalSecret
+		externalSecret *esv1.ExternalSecret
 		eventChan      chan events.SecretRotationEvent
 	)
 
@@ -52,7 +52,7 @@ var _ = Describe("Reloader Controller", func() {
 		ctx = context.Background()
 		scheme = runtime.NewScheme()
 		Expect(esov1.AddToScheme(scheme)).To(Succeed())
-		Expect(esv1beta1.AddToScheme(scheme)).To(Succeed())
+		Expect(esv1.AddToScheme(scheme)).To(Succeed())
 
 		fakeClient = fake.NewClientBuilder().WithScheme(scheme).Build()
 
@@ -146,20 +146,20 @@ var _ = Describe("Reloader Controller", func() {
 	Context("When a secret rotation event is received, and the secret is not watched", func() {
 		It("should not annotate any event out of the secrets to watch list", func() {
 			// Create an ExternalSecret that references the secret not watched
-			externalSecret = &esv1beta1.ExternalSecret{
+			externalSecret = &esv1.ExternalSecret{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test-not-watched",
 					Namespace: "default",
 				},
-				Spec: esv1beta1.ExternalSecretSpec{
-					SecretStoreRef: esv1beta1.SecretStoreRef{
+				Spec: esv1.ExternalSecretSpec{
+					SecretStoreRef: esv1.SecretStoreRef{
 						Name: "my-secret-store",
 						Kind: "SecretStore",
 					},
-					Data: []esv1beta1.ExternalSecretData{
+					Data: []esv1.ExternalSecretData{
 						{
 							SecretKey: "password",
-							RemoteRef: esv1beta1.ExternalSecretDataRemoteRef{
+							RemoteRef: esv1.ExternalSecretDataRemoteRef{
 								Key: "aws://secret/arn:aws:secretsmanager:us-east-1:123456789012:secret:mysecret",
 							},
 						},
@@ -175,20 +175,20 @@ var _ = Describe("Reloader Controller", func() {
 	Context("When a secret rotation event is received", func() {
 		It("should annotate the corresponding ExternalSecret using data field", func() {
 			// Create an ExternalSecret that references the secret via data field
-			externalSecret = &esv1beta1.ExternalSecret{
+			externalSecret = &esv1.ExternalSecret{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test-external-secret-data",
 					Namespace: "default",
 				},
-				Spec: esv1beta1.ExternalSecretSpec{
-					SecretStoreRef: esv1beta1.SecretStoreRef{
+				Spec: esv1.ExternalSecretSpec{
+					SecretStoreRef: esv1.SecretStoreRef{
 						Name: "my-secret-store",
 						Kind: "SecretStore",
 					},
-					Data: []esv1beta1.ExternalSecretData{
+					Data: []esv1.ExternalSecretData{
 						{
 							SecretKey: "password",
-							RemoteRef: esv1beta1.ExternalSecretDataRemoteRef{
+							RemoteRef: esv1.ExternalSecretDataRemoteRef{
 								Key: "aws://secret/arn:aws:secretsmanager:us-east-1:123456789012:secret:mysecret",
 							},
 						},
@@ -206,19 +206,19 @@ var _ = Describe("Reloader Controller", func() {
 			secretIdentifier := "aws://secret/arn:aws:secretsmanager:us-east-1:123456789012:secret:mysecret"
 
 			// Create an ExternalSecret that references the secret via dataFrom.extract
-			externalSecret = &esv1beta1.ExternalSecret{
+			externalSecret = &esv1.ExternalSecret{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test-external-secret-datafrom-extract",
 					Namespace: "default",
 				},
-				Spec: esv1beta1.ExternalSecretSpec{
-					SecretStoreRef: esv1beta1.SecretStoreRef{
+				Spec: esv1.ExternalSecretSpec{
+					SecretStoreRef: esv1.SecretStoreRef{
 						Name: "my-secret-store",
 						Kind: "SecretStore",
 					},
-					DataFrom: []esv1beta1.ExternalSecretDataFromRemoteRef{
+					DataFrom: []esv1.ExternalSecretDataFromRemoteRef{
 						{
-							Extract: &esv1beta1.ExternalSecretDataRemoteRef{
+							Extract: &esv1.ExternalSecretDataRemoteRef{
 								Key: secretIdentifier,
 							},
 						},
@@ -236,20 +236,20 @@ var _ = Describe("Reloader Controller", func() {
 			secretIdentifier := "aws://secret/arn:aws:secretsmanager:us-east-1:123456789012:secret:mysecret"
 
 			// Create an ExternalSecret that references the secret via dataFrom.find
-			externalSecret = &esv1beta1.ExternalSecret{
+			externalSecret = &esv1.ExternalSecret{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test-external-secret-datafrom-find",
 					Namespace: "default",
 				},
-				Spec: esv1beta1.ExternalSecretSpec{
-					SecretStoreRef: esv1beta1.SecretStoreRef{
+				Spec: esv1.ExternalSecretSpec{
+					SecretStoreRef: esv1.SecretStoreRef{
 						Name: "my-secret-store",
 						Kind: "SecretStore",
 					},
-					DataFrom: []esv1beta1.ExternalSecretDataFromRemoteRef{
+					DataFrom: []esv1.ExternalSecretDataFromRemoteRef{
 						{
-							Find: &esv1beta1.ExternalSecretFind{
-								Name: &esv1beta1.FindName{
+							Find: &esv1.ExternalSecretFind{
+								Name: &esv1.FindName{
 									RegExp: secretIdentifier,
 								},
 							},
@@ -265,14 +265,14 @@ var _ = Describe("Reloader Controller", func() {
 })
 
 func assertAnnotations(fakeClient client.Client, secretName string) {
-	updatedES := &esv1beta1.ExternalSecret{}
+	updatedES := &esv1.ExternalSecret{}
 	key := types.NamespacedName{
 		Namespace: "default",
 		Name:      secretName,
 	}
 	// Wait for the controller to process the event by polling
 	Eventually(func() error {
-		updatedES = &esv1beta1.ExternalSecret{}
+		updatedES = &esv1.ExternalSecret{}
 		err := fakeClient.Get(context.Background(), key, updatedES)
 		if err != nil {
 			return err
@@ -292,14 +292,14 @@ func assertAnnotations(fakeClient client.Client, secretName string) {
 }
 
 func assertNotWatchedAnnotations(fakeClient client.Client, secretName string) {
-	updatedES := &esv1beta1.ExternalSecret{}
+	updatedES := &esv1.ExternalSecret{}
 	key := types.NamespacedName{
 		Namespace: "default",
 		Name:      secretName,
 	}
 	// Wait for the controller to process the event by polling
 	Eventually(func() error {
-		updatedES = &esv1beta1.ExternalSecret{}
+		updatedES = &esv1.ExternalSecret{}
 		err := fakeClient.Get(context.Background(), key, updatedES)
 		if err != nil {
 			return err
