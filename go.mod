@@ -16,7 +16,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.15.0
 	github.com/onsi/ginkgo/v2 v2.25.1
 	github.com/onsi/gomega v1.38.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.244.0
