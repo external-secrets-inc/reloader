@@ -80,8 +80,8 @@ github.com/evanphx/json-patch v5.6.0+incompatible h1:jBYDEEiFBPxA0v50tFdvOzQQTCv
 github.com/evanphx/json-patch v5.6.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/evanphx/json-patch/v5 v5.9.11 h1:/8HVnzMq13/3x9TPvjG08wUGqBTmZBsCWzjTM0wiaDU=
 github.com/evanphx/json-patch/v5 v5.9.11/go.mod h1:3j+LviiESTElxA4p3EMKAB9HXj3/XEtnUf6OZxqIQTM=
-github.com/external-secrets/external-secrets v0.19.0 h1:O8x9uA3pw4lZpOq4UZXUDaKPSj3f2SnxDsvCv72yDWk=
-github.com/external-secrets/external-secrets v0.19.0/go.mod h1:s7JHCCdh2ydznN+6Q9tEseOX+Zt/GePyd+g/Xze2AGk=
+github.com/external-secrets/external-secrets v0.19.2 h1:bdOpEt9Pww2e8QGh4apX7M0nehwNOVAQJLd8z6hAXWI=
+github.com/external-secrets/external-secrets v0.19.2/go.mod h1:rwuhFnFOmZN24xj17fyKzg+75ngdVs/EJE5ENwEKFT8=
 github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2Wg=
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/fsnotify/fsnotify v1.9.0 h1:2Ml+OJNzbYCTzsxtv8vKSFD9PbJjmhYF14k/jKC7S9k=

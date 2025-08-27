@@ -1,6 +1,6 @@
 module github.com/external-secrets-inc/reloader
 
-go 1.24.4
+go 1.24.6
 
 require (
 	cloud.google.com/go/iam v1.5.2
@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.6
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.40.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.0
-	github.com/external-secrets/external-secrets v0.19.0
+	github.com/external-secrets/external-secrets v0.19.2
 	github.com/go-logr/logr v1.4.3
 	github.com/googleapis/gax-go/v2 v2.15.0
 	github.com/onsi/ginkgo/v2 v2.25.1
