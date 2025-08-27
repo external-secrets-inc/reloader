@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"cloud.google.com/go/pubsub"
+	"cloud.google.com/go/pubsub" //nolint:staticcheck
 	v1alpha1 "github.com/external-secrets-inc/reloader/api/v1alpha1"
 	"github.com/external-secrets-inc/reloader/internal/events"
 	"github.com/external-secrets-inc/reloader/internal/listener/schema"
