@@ -25,6 +25,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
@@ -56,7 +57,12 @@ func (h *Handler[T]) Start() error {
 	if err != nil {
 		return fmt.Errorf("could not create client set: %w", err)
 	}
-	manager, err := ctrl.NewManager(cfg, ctrl.Options{})
+	metricsServerOptions := metricsserver.Options{
+		BindAddress: "0",
+	}
+	manager, err := ctrl.NewManager(cfg, ctrl.Options{
+		Metrics: metricsServerOptions,
+	})
 	if err != nil {
 		return fmt.Errorf("could not create manager: %w", err)
 	}

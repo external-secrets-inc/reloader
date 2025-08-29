@@ -13,6 +13,7 @@ const (
 	EXTERNAL_SECRET = "ExternalSecret"
 	PUSH_SECRET     = "PushSecret"
 	DEPLOYMENT      = "Deployment"
+	WORKFLOW        = "WorkflowRunTemplate"
 )
 
 type ApplyFn func(obj client.Object, event events.SecretRotationEvent) error
