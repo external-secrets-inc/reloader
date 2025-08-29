@@ -59,3 +59,13 @@ rules:
   - configs/finalizers
   verbs:
   - update
+- apiGroups:
+  - workflows.external-secrets.io
+  resources:
+  - workflowruntemplates
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch

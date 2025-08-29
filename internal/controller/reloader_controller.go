@@ -88,6 +88,7 @@ func (r *ReloaderReconciler) SetupWithManager(mgr ctrl.Manager) error {
 // +kubebuilder:rbac:groups=reloader.external-secrets.io,resources=configs/finalizers,verbs=update
 // For k8s ExternalSecrets and PushSecrets destination
 // +kubebuilder:rbac:groups=external-secrets.io,resources=externalsecrets;pushsecrets,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=workflows.external-secrets.io,resources=workflowruntemplates,verbs=get;list;watch;update;patch
 // For k8s Deployments destination
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;update;patch
 // +kubebuilder:rbac:groups=coordination.k8s.io,resources=leases,verbs=get;create;update;patch
