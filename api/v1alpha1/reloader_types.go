@@ -79,6 +79,8 @@ type DestinationToWatch struct {
 	// +kubebuilder:validation:Enum=ExternalSecret;Deployment;PushSecret
 	Type string `json:"type"`
 	// +optional
+	WorkflowRunTemplate *WorkflowRunTemplateDestination `json:"workflowRunTemplate,omitempty"`
+	// +optional
 	ExternalSecret *ExternalSecretDestination `json:"externalSecret,omitempty"`
 	// +optional
 	PushSecret *PushSecretDestination `json:"pushSecret,omitempty"`
