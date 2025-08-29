@@ -34,7 +34,7 @@ func (h *Handler) Filter(destination *v1alpha1.DestinationToWatch, event events.
 	logger := log.FromContext(h.ctx)
 	workflows := &unstructured.UnstructuredList{}
 	workflows.SetGroupVersionKind(kruntime.GroupVersionKind{
-		Group:   "workflow.external-secrets.io",
+		Group:   "workflows.external-secrets.io",
 		Version: "v1alpha1",
 		Kind:    "WorkflowRunTemplateList",
 	})

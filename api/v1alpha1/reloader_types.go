@@ -76,7 +76,7 @@ type NotificationSource struct {
 type DestinationToWatch struct {
 	// Type specifies the type of destination to watch.
 	// +required
-	// +kubebuilder:validation:Enum=ExternalSecret;Deployment;PushSecret
+	// +kubebuilder:validation:Enum=ExternalSecret;Deployment;PushSecret;WorkflowRunTemplate
 	Type string `json:"type"`
 	// +optional
 	WorkflowRunTemplate *WorkflowRunTemplateDestination `json:"workflowRunTemplate,omitempty"`
