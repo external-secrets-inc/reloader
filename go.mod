@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/pubsub v1.50.1
 	cloud.google.com/go/secretmanager v1.15.0
 	github.com/aws/aws-sdk-go-v2 v1.39.2
-	github.com/aws/aws-sdk-go-v2/config v1.31.9
+	github.com/aws/aws-sdk-go-v2/config v1.31.12
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.16
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.42.5
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.6
