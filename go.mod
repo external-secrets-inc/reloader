@@ -3,7 +3,7 @@ module github.com/external-secrets-inc/reloader
 go 1.25.1
 
 require (
-	cloud.google.com/go/iam v1.5.2
+	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/pubsub v1.50.1
 	cloud.google.com/go/secretmanager v1.15.0
 	github.com/aws/aws-sdk-go-v2 v1.39.2
