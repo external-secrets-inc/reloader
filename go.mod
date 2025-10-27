@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/pubsub v1.50.1
-	cloud.google.com/go/secretmanager v1.15.1
+	cloud.google.com/go/secretmanager v1.16.0
 	github.com/aws/aws-sdk-go-v2 v1.39.4
 	github.com/aws/aws-sdk-go-v2/config v1.31.13
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.19
