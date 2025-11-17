@@ -22,8 +22,8 @@ require (
 	google.golang.org/api v0.255.0
 	google.golang.org/grpc v1.76.0
 	grpc.go4.org v0.0.0-20170609214715-11d0a25b4919
-	k8s.io/api v0.34.1
-	k8s.io/apimachinery v0.34.1
+	k8s.io/api v0.34.2
+	k8s.io/apimachinery v0.34.2
 	k8s.io/client-go v0.34.1
 	sigs.k8s.io/controller-runtime v0.22.4
 )
